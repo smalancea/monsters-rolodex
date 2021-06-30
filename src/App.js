@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Cardlist } from './components/card-list/card-list.component'
+import { Cardlist } from './components/card-list/card-list.component';
+import { SearchBox } from './components/searchBox/search-box.component';
 import './App.css';
 
 class App extends Component {
@@ -7,21 +8,30 @@ class App extends Component {
     super();
 
     this.state = {
-      monsters: []
+      monsters: [],
+      serchField: ''
     }
   }
 
   componentDidMount() {
     fetch('https://jsonplaceholder.typicode.com/users')
     .then(response => response.json())
-    .then(users => this.setState({monsters: users}));
-  }
+    .then(users => this.setState({ monsters: users }));
+}
 
   render() {
+    const { monsters, searchField } = this.state;
+    const filteredMonsters = monsters.filter(monster =>
+      searchField ? monster.name.toLowerCase().includes(searchField.toLowerCase()) : true
+    );
+
     return (
       <div className="App">
-        <Cardlist monsters={this.state.monsters}>
-        </Cardlist>
+        <SearchBox
+          placeholder='Search Monsters'
+          handleChange={e => this.setState({ searchField: e.target.value})}
+        />
+        <Cardlist monsters={filteredMonsters} />
       </div>
     );
   }
